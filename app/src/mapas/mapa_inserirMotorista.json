@@ -1,0 +1,113 @@
+{
+  "modo": "inserir",
+  "login": {
+    "username": "[name=\"formCad:nome\"]",
+    "password": "[name=\"formCad:senha\"]",
+    "submit": "[name=\"formCad:entrar\"]"
+  },
+  "steps": [
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt126_label",
+      "meta": {
+        "role": null,
+        "text": "Cadastros",
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt137",
+      "meta": {
+        "role": null,
+        "text": "Motoristas",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt138",
+      "meta": {
+        "role": null,
+        "text": "Motoristas",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotoristaFil:novomotoristaFil\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
+      "key": "cidade",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "press",
+      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false,
+        "key": "Enter"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "div.rf-au-itm.rf-au-opt.rf-au-fnt.rf-au-inp.rf-au-itm-sel.rf-au-opt-sel:nth-child(1)",
+      "meta": {
+        "role": null,
+        "text": "CUIABA,MT,BRASIL-5290",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_complemento\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_complemento\"]",
+      "key": "complemento",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:cancelarmotorista\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    }
+  ],
+  "logout": "#formMenu\\:j_idt10"
+}

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mapeador de Página</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- Custom tweaks -->
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <span class="navbar-brand">Mapeador de Página</span>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+
+        <!-- Iniciar / Parar -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <strong>Iniciar / Parar Mapeamento</strong>
+            </div>
+            <div class="card-body">
+                <form id="form" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="url" class="form-label">URL da Página</label>
+                        <input type="text" class="form-control" name="url" id="url" required
+                            placeholder="http://.../login.jsf">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="nomeArquivo" class="form-label">Nome do Arquivo (sem prefixo)</label>
+                        <input type="text" class="form-control" name="nomeArquivo" id="nomeArquivo" required
+                            placeholder="ex: consultarMotorista">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="modo" class="form-label">Modo</label>
+                        <select id="modo" class="form-select">
+                            <option value="consultar">Consultar</option>
+                            <option value="inserir">Inserir</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2 mt-2">
+                        <button type="submit" id="btnStart" class="btn btn-success">
+                            Iniciar Mapeamento
+                        </button>
+                        <button type="button" id="btnStop" class="btn btn-outline-danger" disabled>
+                            Parar
+                        </button>
+                        <span id="status" class="ms-2 text-muted align-self-center"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mapas salvos -->
+        <div class="row g-3">
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong>Mapas salvos</strong>
+                        <button id="btnReload" class="btn btn-sm btn-outline-secondary">Atualizar lista</button>
+                    </div>
+                    <div class="card-body">
+                        <ul id="listaMapas" class="list-group list-group-flush"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100" id="painelMapa" style="display:none;">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 id="mapaTitulo" class="card-title mono mb-0"></h5>
+                                <small class="text-muted">Modo: <span id="mapaModo"
+                                        class="badge bg-info-subtle text-info-emphasis">—</span></small>
+                            </div>
+                            <div>
+                                <button id="btnCancelarEdicao"
+                                    class="btn btn-sm btn-outline-secondary">Cancelar</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label class="form-label">JSON de dados para esse mapa</label>
+                            <input type="file" id="arquivoDados" accept=".json,application/json" class="form-control">
+                            <div id="dadosResumo" class="mt-2" style="display:none;">
+                                <strong>Chaves presentes no JSON de dados:</strong>
+                                <div id="jsonKeys" class="json-keys mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div id="tabelaKeysBox" style="display:none;">
+                            <h6 class="mb-2">Steps com <code>key</code> no mapa</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle" id="tabelaKeys">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Key no mapa</th>
+                                            <th>Key no mapa (editável)</th>
+                                            <th style="width:240px;">Escolher do JSON</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-2 d-flex align-items-center gap-2">
+                                <button id="btnSalvarKeys" class="btn btn-primary">Salvar alterações no mapa</button>
+                                <span id="salvarStatus" class="text-muted"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap Bundle (JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const btnStart = document.getElementById('btnStart');
+        const btnStop = document.getElementById('btnStop');
+        const btnReload = document.getElementById('btnReload');
+
+        const listaMapas = document.getElementById('listaMapas');
+        const painelMapa = document.getElementById('painelMapa');
+        const mapaTitulo = document.getElementById('mapaTitulo');
+        const mapaModoEl = document.getElementById('mapaModo');
+        const arquivoDados = document.getElementById('arquivoDados');
+        const dadosResumo = document.getElementById('dadosResumo');
+        const jsonKeysBox = document.getElementById('jsonKeys');
+        const tabelaKeysBox = document.getElementById('tabelaKeysBox');
+        const tabelaKeys = document.querySelector('#tabelaKeys tbody');
+        const salvarStatus = document.getElementById('salvarStatus');
+        const btnCancelarEdicao = document.getElementById('btnCancelarEdicao');
+
+        let mapaAtualNome = null;
+        let mapaAtual = null;
+        let jsonDados = null;
+        let jsonDadosKeys = [];
+
+        // Desabilita o botão "Abrir" do mapa que está aberto
+        function updateOpenButtons() {
+            const buttons = document.querySelectorAll('.map-open-btn');
+            buttons.forEach(btn => {
+                btn.disabled = (btn.dataset.name === mapaAtualNome && painelMapa.style.display !== 'none');
+            });
+        }
+
+        async function loadMapList() {
+            listaMapas.innerHTML = '<li class="list-group-item text-muted">Carregando…</li>';
+            try {
+                const r = await fetch('/mapas');
+                const j = await r.json();
+                const mapas = Array.isArray(j.mapas) ? j.mapas : [];
+                if (!mapas.length) {
+                    listaMapas.innerHTML = '<li class="list-group-item text-muted">Nenhum mapa encontrado.</li>';
+                    return;
+                }
+                listaMapas.innerHTML = '';
+                mapas.forEach((nome) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    const left = document.createElement('span');
+                    left.textContent = nome;
+                    left.className = 'mono';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-sm btn-outline-primary map-open-btn';
+                    btn.textContent = 'Abrir';
+                    btn.dataset.name = nome;
+                    btn.addEventListener('click', () => openMap(nome));
+
+                    li.appendChild(left);
+                    li.appendChild(btn);
+                    listaMapas.appendChild(li);
+                });
+
+                updateOpenButtons();
+            } catch (e) {
+                listaMapas.innerHTML = `<li class="list-group-item text-danger">Erro ao listar mapas: ${e.message}</li>`;
+            }
+        }
+
+        async function openMap(nomeArquivo) {
+            painelMapa.style.display = 'none';
+            salvarStatus.textContent = '';
+            arquivoDados.value = '';
+            dadosResumo.style.display = 'none';
+            tabelaKeysBox.style.display = 'none';
+            tabelaKeys.innerHTML = '';
+            jsonDados = null; jsonDadosKeys = [];
+
+            try {
+                const r = await fetch(`/mapas/${encodeURIComponent(nomeArquivo)}`);
+                if (!r.ok) throw new Error('Falha ao carregar mapa');
+                const mapa = await r.json();
+
+                mapaAtualNome = nomeArquivo;
+                mapaAtual = mapa;
+
+                mapaTitulo.textContent = nomeArquivo;
+                mapaModoEl.textContent = mapa.modo || '(não definido)';
+                painelMapa.style.display = '';
+
+                updateOpenButtons();
+                renderTabelaKeys();
+            } catch (e) {
+                alert('Erro ao abrir mapa: ' + e.message);
+            }
+        }
+
+        btnCancelarEdicao.addEventListener('click', () => {
+            // Fecha painel e limpa estados
+            painelMapa.style.display = 'none';
+            salvarStatus.textContent = '';
+            arquivoDados.value = '';
+            dadosResumo.style.display = 'none';
+            tabelaKeysBox.style.display = 'none';
+            tabelaKeys.innerHTML = '';
+            // Limpa seleção de mapa atual e reabilita botões "Abrir"
+            mapaAtualNome = null;
+            mapaAtual = null;
+            updateOpenButtons();
+        });
+
+        function renderTabelaKeys() {
+            const steps = Array.isArray(mapaAtual?.steps) ? mapaAtual.steps : [];
+            const rows = steps
+                .map((s, idx) => ({ idx, s }))
+                .filter(({ s }) => typeof s?.key === 'string');
+
+            tabelaKeys.innerHTML = '';
+            if (!rows.length) {
+                tabelaKeysBox.style.display = 'none';
+                return;
+            }
+
+            rows.forEach(({ s }) => {
+                const tr = document.createElement('tr');
+
+                // Key no mapa (somente leitura)
+                const tdKeyOriginal = document.createElement('td');
+                tdKeyOriginal.className = 'text-monospace';
+                tdKeyOriginal.textContent = s.key || '';
+                tr.appendChild(tdKeyOriginal);
+
+                // Key no mapa (editável)
+                const tdKeyEdit = document.createElement('td');
+                const inp = document.createElement('input');
+                inp.type = 'text';
+                inp.className = 'form-control form-control-sm';
+                inp.value = s.key || '';
+                inp.dataset.original = s.key || '';
+                tdKeyEdit.appendChild(inp);
+                tr.appendChild(tdKeyEdit);
+
+                // Escolher do JSON (dropdown)
+                const tdSelJson = document.createElement('td');
+                if (jsonDadosKeys.length) {
+                    const sel = document.createElement('select');
+                    sel.className = 'form-select form-select-sm';
+
+                    const optVazio = document.createElement('option');
+                    optVazio.value = '';
+                    optVazio.textContent = '(manter/editar manualmente)';
+                    sel.appendChild(optVazio);
+
+                    jsonDadosKeys.forEach(k => {
+                        const o = document.createElement('option');
+                        o.value = k;
+                        o.textContent = k;
+                        sel.appendChild(o);
+                    });
+
+                    sel.addEventListener('change', () => {
+                        if (sel.value) {
+                            inp.value = sel.value; // atualiza o campo editável
+                        }
+                    });
+                    tdSelJson.appendChild(sel);
+                } else {
+                    tdSelJson.innerHTML = '<span class="text-muted">—</span>';
+                }
+                tr.appendChild(tdSelJson);
+
+                tabelaKeys.appendChild(tr);
+            });
+
+            tabelaKeysBox.style.display = '';
+        }
+
+        // Carrega JSON de dados do usuário (local) e re-renderiza a tabela
+        arquivoDados.addEventListener('change', async (e) => {
+            salvarStatus.textContent = '';
+            const file = e.target.files?.[0];
+            if (!file) return;
+            try {
+                const txt = await file.text();
+                jsonDados = JSON.parse(txt);
+                jsonDadosKeys = Object.keys(jsonDados || {});
+                jsonKeysBox.innerHTML = '';
+                jsonDadosKeys.forEach(k => {
+                    const tag = document.createElement('span');
+                    tag.className = 'badge text-bg-light border';
+                    tag.textContent = k;
+                    jsonKeysBox.appendChild(tag);
+                });
+                dadosResumo.style.display = '';
+                renderTabelaKeys();
+            } catch (err) {
+                alert('JSON inválido: ' + err.message);
+            }
+        });
+
+        // Salva alterações de keys no servidor
+        document.getElementById('btnSalvarKeys').addEventListener('click', async () => {
+            if (!mapaAtualNome || !mapaAtual) return;
+            const rows = [...tabelaKeys.querySelectorAll('tr')];
+
+            const mapping = {};
+            rows.forEach(tr => {
+                const inp = tr.querySelector('input[type="text"]');
+                if (!inp) return;
+                const from = inp.dataset.original || '';
+                const to = inp.value || '';
+                if (from && to && from !== to) {
+                    mapping[from] = to;
+                }
+            });
+
+            if (!Object.keys(mapping).length) {
+                salvarStatus.textContent = 'Nenhuma alteração detectada.';
+                return;
+            }
+
+            salvarStatus.textContent = 'Salvando…';
+            try {
+                const r = await fetch(`/mapas/${encodeURIComponent(mapaAtualNome)}/keys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mapping })
+                });
+                const j = await r.json();
+                if (!r.ok) throw new Error(j.erro || 'Falha ao salvar');
+
+                salvarStatus.textContent = 'Salvo com sucesso.';
+                await openMap(mapaAtualNome);
+            } catch (e) {
+                salvarStatus.textContent = 'Erro ao salvar: ' + e.message;
+            }
+        });
+
+        function isValidHttpUrl(str) {
+            try {
+                const u = new URL(str);
+                return u.protocol === 'http:' || u.protocol === 'https:';
+            } catch {
+                return false;
+            }
+        }
+
+        // Iniciar mapeamento
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            statusEl.textContent = 'Iniciando mapeamento…';
+            btnStart.disabled = true;
+            btnStop.disabled = false;
+
+            const url = document.getElementById('url').value;
+            const nomeArquivo = document.getElementById('nomeArquivo').value;
+            const modo = document.getElementById('modo').value;
+
+            // Validação básica da URL
+            if (!isValidHttpUrl(url.trim())) {
+                statusEl.textContent = 'URL inválida. Informe um endereço http(s) válido.';
+                statusEl.classList.add('text-danger');
+                btnStart.disabled = false;
+                btnStop.disabled = true;
+                return;
+            } else {
+                statusEl.classList.remove('text-danger');
+            }
+
+            try {
+                const response = await fetch('/mapear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, nomeArquivo, modo })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.erro || 'Falha ao iniciar');
+                statusEl.textContent = data.mensagem || 'Mapeamento iniciado. Clique em "Parar".';
+            } catch (err) {
+                statusEl.textContent = 'Erro ao enviar: ' + err.message;
+                btnStart.disabled = false;
+                btnStop.disabled = true;
+            }
+        });
+
+        // Parar mapeamento
+        btnStop.addEventListener('click', async () => {
+            statusEl.textContent = 'Parando mapeamento…';
+            try {
+                const resp = await fetch('/stop', { method: 'POST' });
+                const json = await resp.json();
+                if (!resp.ok) throw new Error(json.erro || 'Falha ao parar');
+                statusEl.textContent = json.mensagem || 'Mapeamento finalizado.';
+                await loadMapList();
+            } catch (e) {
+                statusEl.textContent = 'Erro ao parar: ' + e.message;
+            }
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+        });
+
+        // Atualizar lista
+        btnReload.addEventListener('click', loadMapList);
+
+        // Carrega lista ao abrir a página
+        loadMapList();
+    </script>
+</body>
+
+</html>

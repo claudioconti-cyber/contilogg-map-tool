@@ -1,0 +1,31 @@
+{
+  "name": "contilogg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon"
+  },
+  "keywords": [],
+  "author": "chatgpt",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "playwright": "^1.54.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ignore": [
+      "src/mapas/**"
+    ],
+    "ext": "js,json,html,css",
+    "exec": "node src/server.js",
+    "restartable": "rs",
+    "delay": "200"
+  }
+}

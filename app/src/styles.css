@@ -1,0 +1,13 @@
+body {
+    scroll-behavior: smooth;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.json-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}

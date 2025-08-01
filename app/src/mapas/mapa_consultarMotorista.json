@@ -1,0 +1,76 @@
+{
+  "modo": "consultar",
+  "login": {
+    "username": "[name=\"formCad:nome\"]",
+    "password": "[name=\"formCad:senha\"]",
+    "submit": "[name=\"formCad:entrar\"]"
+  },
+  "steps": [
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt126_label",
+      "meta": {
+        "role": null,
+        "text": "Cadastros",
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt137",
+      "meta": {
+        "role": null,
+        "text": "Motoristas",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt138",
+      "meta": {
+        "role": null,
+        "text": "Motoristas",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotoristaFil:MotoristaFil_cpf\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotoristaFil:MotoristaFil_cpf\"]",
+      "key": "cpf",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotoristaFil:filtrarmotoristaFil\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formmotoristaFil\\:table\\:0\\:descricao > a:nth-child(1)",
+      "meta": {
+        "role": null,
+        "text": "CLAUDIO ROBERTO CONTI FILHO",
+        "networkTriggered": true,
+        "resultSelector": true
+      }
+    }
+  ],
+  "logout": "#formMenu\\:j_idt10"
+}
