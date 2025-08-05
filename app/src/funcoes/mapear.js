@@ -9,6 +9,7 @@ let page = null;
 let output = '';
 let interactions = [];
 let ajaxCount = 0;
+let lastAjaxUrl = null;          // armazena URL do último XHR/FETCH
 let mapMode = null; // "consultar" | "inserir" | null
 
 /* =================================================================== */
@@ -41,7 +42,10 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
     /* === Contador de XHR/fetch === */
     context.on('request', req => {
         const t = req.resourceType();
-        if (t === 'xhr' || t === 'fetch') ajaxCount++;
+        if (t === 'xhr' || t === 'fetch') {
+            ajaxCount++;
+            lastAjaxUrl = req.url();
+        }
     });
 
     /* === INJETAR SCRIPT DE CAPTURA (mesmo conteúdo do mapear_old.js) === */
@@ -158,12 +162,23 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
             }
 
             function buildSelectorForField(target) {
-                const sel = uniqueSelector(target);
-                const unique = isUnique(sel); const visible = isVisible(target);
-                if (SAVE_ONLY_UNIQUE_VISIBLE && (!unique || !visible))
-                    return { selector: null, reason: unique ? 'not-visible' : 'not-unique' };
-                return { selector: sel, unique, visible };
+                const selEl = target;
+                const sel = uniqueSelector(selEl);
+                const unique = isUnique(sel);
+
+                const isFileInput =
+                    selEl.tagName === 'INPUT' &&
+                    ((selEl.getAttribute('type') || '').toLowerCase() === 'file');
+
+                // Se for input file, ignore visibilidade (normalmente fica hidden)
+                const visible = isFileInput ? true : isVisible(selEl);
+
+                if (SAVE_ONLY_UNIQUE_VISIBLE && (!unique || !visible)) {
+                    return { selector: null, visible, unique, reason: unique ? 'not-visible' : 'not-unique' };
+                }
+                return { selector: sel, visible, unique };
             }
+
 
             function pushInteractionRaw(el, action) {
                 if (!el || el.nodeType !== 1) return;
@@ -258,10 +273,104 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
     );
     /* ----------- FIM DO SCRIPT INJETADO ----------- */
 
+    /* === Captura de DOWNLOAD === */
+    page.on('download', download => {
+        // Busca o último clique para “ancorar” o selector do botão
+        const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
+        interactions.push({
+            selector: lastClick ? lastClick.selector : null,
+            action: 'download',
+            tagName: lastClick ? lastClick.tagName : '',
+            visible: true,
+            unique: true,
+            attrs: lastClick ? lastClick.attrs : {},
+            meta: {
+                suggestedFilename: download.suggestedFilename(),
+                downloadDir: null      // será preenchido pelo executor
+            },
+            timestamp: Date.now(),
+            url: download.url()
+        });
+        console.log('✔ download', download.suggestedFilename());
+    });
+
+    /* === Captura de “download” via PDF Viewer (resposta application/pdf) === */
+    context.on('response', async (res) => {
+        try {
+            const headers = res.headers();
+            const ct = headers['content-type'] || headers['Content-Type'] || '';
+            if (!ct.toLowerCase().includes('application/pdf')) return;
+
+            // Só nos interessa navegação (viewer de PDF abrindo na aba ou em popup)
+            const req = res.request();
+            if (!req.isNavigationRequest()) return;
+
+            // Ancora no último clique feito (botão/ação que levou ao viewer)
+            const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
+
+            interactions.push({
+                // NÃO repetimos o seletor do clique anterior quando vier do viewer
+                selector: 'html',                               // <- seletor neutro
+                action: 'download',
+                tagName: lastClick ? lastClick.tagName : '',
+                visible: true,
+                unique: true,
+                attrs: lastClick ? lastClick.attrs : {},
+                meta: {
+                    fromPdfViewer: true,                          // indica que veio do viewer
+                    suggestedFilename: (res.url().split('/').pop() || 'document.pdf'),
+                    downloadDir: null,                            // preenchido no executor
+                    anchorSelector: lastClick ? lastClick.selector : null // guardamos o "clique âncora" só como metadado
+                },
+                timestamp: Date.now(),
+                url: res.url()                                  // URL do PDF que será baixado pelo executor
+            });
+
+            console.log('✔ download (PDF viewer)', res.url());
+        } catch {
+            // ignorar erros de parsing de header/response
+        }
+    });
+
+    /* Também cobre o caso de popup que abre um PDF */
+    context.on('page', (newPage) => {
+        newPage.on('response', async (res) => {
+            try {
+                const headers = res.headers();
+                const ct = headers['content-type'] || headers['Content-Type'] || '';
+                if (!ct.toLowerCase().includes('application/pdf')) return;
+                const req = res.request();
+                if (!req.isNavigationRequest()) return;
+
+                const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
+
+                interactions.push({
+                    selector: 'html',                                // seletor neutro (não repetimos o clique)
+                    action: 'download',
+                    tagName: lastClick ? lastClick.tagName : '',
+                    visible: true,
+                    unique: true,
+                    attrs: lastClick ? lastClick.attrs : {},
+                    meta: {
+                        fromPdfViewer: true,
+                        suggestedFilename: (res.url().split('/').pop() || 'document.pdf'),
+                        downloadDir: null,
+                        anchorSelector: lastClick ? lastClick.selector : null
+                    },
+                    timestamp: Date.now(),
+                    url: res.url()
+                });
+
+                console.log('✔ download (PDF viewer / popup)', res.url());
+            } catch { /* ignore */ }
+        });
+    });
+
     /* Expondo função que o script injetado usa */
     await page.exposeFunction('reportInteraction', meta => {
         meta.network = ajaxCount > 0;
         ajaxCount = 0;
+        if (meta.network === true) meta.reqUrl = lastAjaxUrl || null;
         interactions.push(meta);
         console.log('✔', meta.action, meta.selector || '(ignorado)');
     });
@@ -298,26 +407,49 @@ async function stop() {
         if (!it.selector || loginSel.has(it.selector)) continue;
         const tag = it.tagName || ''; const attrs = it.attrs || {};
         let act = null;
-        if (it.action === 'click') act = 'click';
+
+        if (it.action === 'download')
+            act = 'download'; else if (it.action === 'click')
+            // Se for click num input[type=file] consideramos “upload”
+            if (tag === 'input' && attrs.type === 'file')
+                act = 'upload';
+            else
+                act = 'click';
         else if ((tag === 'input' || tag === 'textarea') && (it.action === 'input' || it.action === 'change'))
             act = attrs.type === 'file' ? 'upload' : 'fill';
-        else if (tag === 'select' && it.action === 'change') act = 'select';
-        else if (it.action === 'press' && it.meta?.key?.toLowerCase() === 'enter') act = 'press';
+        else if (tag === 'select' && it.action === 'change')
+            act = 'select';
+        else if (it.action === 'press' && it.meta?.key?.toLowerCase() === 'enter')
+            act = 'press';
+
         if (!act) continue;
+
 
         const keyAttr = (attrs.name || attrs.placeholder || attrs.id || '').toLowerCase().replace(/\s+/g, '');
         const k = `${act}::${it.selector}`; if (seen.has(k)) continue; seen.add(k);
 
+        // meta: começa pelos metadados originais da interação (ex.: fromPdfViewer, suggestedFilename)
+        const meta = {
+            ...(it.meta || {}),
+            role: attrs.role || null,
+            text: attrs.text || null,
+            networkTriggered: it.network === true,
+            ...(act === 'press' ? { key: 'Enter' } : {})
+        };
+
+        if (act === 'upload' && meta.uploadDir == null) meta.uploadDir = null;
+        if (act === 'download' && meta.downloadDir == null) meta.downloadDir = null;
+
+        // expectedUrl (sem query) se houver
+        if (it.meta?.reqUrl) meta.expectedUrl = it.meta.reqUrl.split('?')[0];
+
         steps.push({
             action: act,
+            // Mantemos selector normal exceto quando veio do viewer, que já setamos como 'html' na captura
             selector: it.selector,
             ...(act === 'fill' || act === 'upload' ? { key: keyAttr } : {}),
-            meta: {
-                role: attrs.role || null,
-                text: attrs.text || null,
-                networkTriggered: it.network === true,
-                ...(act === 'press' ? { key: 'Enter' } : {})
-            }
+            ...(act === 'download' && it.url ? { url: it.url } : {}),  // <- inclui a URL no step de download
+            meta
         });
     }
 

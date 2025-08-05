@@ -1,0 +1,70 @@
+{
+  "modo": "download",
+  "login": {
+    "username": "[name=\"formCad:nome\"]",
+    "password": "[name=\"formCad:senha\"]",
+    "submit": "[name=\"formCad:entrar\"]"
+  },
+  "steps": [
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt184_label",
+      "meta": {
+        "role": null,
+        "text": "Viagens",
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt193",
+      "meta": {
+        "role": null,
+        "text": "Painel de CTe/NFSe",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formconsPainelCte:filtrarconsPainelCte\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formCad\\:tablepcte\\:0\\:dacte",
+      "meta": {
+        "role": null,
+        "text": "DACTE",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "download",
+      "selector": "html",
+      "url": "http://sitesat.ontransportes.com.br:8100/sitesat2/consPainelCte.jsf?dswid=-2721",
+      "meta": {
+        "fromPdfViewer": true,
+        "suggestedFilename": "consPainelCte.jsf?dswid=-2721",
+        "downloadDir": null,
+        "anchorSelector": "#formCad\\:tablepcte\\:0\\:dacte",
+        "role": null,
+        "text": "DACTE",
+        "networkTriggered": false
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formCad:fechar\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false
+      }
+    }
+  ],
+  "logout": "#formMenu\\:j_idt10"
+}

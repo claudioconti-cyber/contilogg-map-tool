@@ -1,5 +1,5 @@
 {
-  "modo": "inserir",
+  "modo": "consultar",
   "login": {
     "username": "[name=\"formCad:nome\"]",
     "password": "[name=\"formCad:senha\"]",
@@ -29,7 +29,7 @@
       "selector": "#formMenu\\:j_idt138",
       "meta": {
         "role": null,
-        "text": "Motoristas",
+        "text": "Motoristasnew RichFaces.ui.MenuItem(\"formMenu:j_idt138\",{\"onClickHandler\":function(event){RichFaces.submitForm(event.for",
         "networkTriggered": false
       }
     },
@@ -44,7 +44,7 @@
     },
     {
       "action": "click",
-      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
+      "selector": "[name=\"formmotorista:Motorista_configFoto\"]",
       "meta": {
         "role": null,
         "text": null,
@@ -52,51 +52,23 @@
       }
     },
     {
-      "action": "fill",
-      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
-      "key": "cidade",
+      "action": "upload",
+      "selector": "#formmotorista\\:tableFotos\\:0\\:selecionarFoto > div.rf-fu-hdr:nth-child(1) > span.rf-fu-btns-lft:nth-child(1) > span.rf-fu-btn-add:nth-child(1) > span.rf-fu-btn-cnt-add:nth-child(1) > span.rf-fu-inp-cntr:nth-child(1) > input.rf-fu-inp:nth-child(1)",
+      "key": "",
       "meta": {
         "role": null,
         "text": null,
-        "networkTriggered": true
-      }
-    },
-    {
-      "action": "press",
-      "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
-      "meta": {
-        "role": null,
-        "text": null,
-        "networkTriggered": false,
-        "key": "Enter"
+        "networkTriggered": true,
+        "uploadDir": null
       }
     },
     {
       "action": "click",
-      "selector": "div.rf-au-itm.rf-au-opt.rf-au-fnt.rf-au-inp.rf-au-itm-sel.rf-au-opt-sel:nth-child(1)",
-      "meta": {
-        "role": null,
-        "text": "CUIABA,MT,BRASIL-5290",
-        "networkTriggered": false
-      }
-    },
-    {
-      "action": "click",
-      "selector": "[name=\"formmotorista:Motorista_complemento\"]",
+      "selector": "[name=\"formmotorista:j_idt1213\"]",
       "meta": {
         "role": null,
         "text": null,
         "networkTriggered": true
-      }
-    },
-    {
-      "action": "fill",
-      "selector": "[name=\"formmotorista:Motorista_complemento\"]",
-      "key": "complemento",
-      "meta": {
-        "role": null,
-        "text": null,
-        "networkTriggered": false
       }
     },
     {
@@ -105,7 +77,8 @@
       "meta": {
         "role": null,
         "text": null,
-        "networkTriggered": true
+        "networkTriggered": true,
+        "resultSelector": true
       }
     }
   ],
