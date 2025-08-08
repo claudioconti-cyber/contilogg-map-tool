@@ -193,35 +193,51 @@ async function start(url, outputFile = 'mapa.json', operacao = null, categoria =
                 return { selector: sel, visible, unique };
             }
 
-
             function pushInteractionRaw(el, action) {
                 if (!el || el.nodeType !== 1) return;
+
                 const tag = (el.tagName || '').toLowerCase();
                 const built = action === 'click' ? buildSelectorForClick(el) : buildSelectorForField(el);
                 if (!built.selector) {
                     if (LOG_SKIP_REASON) console.warn(`⏭ ignorado (${action}):`, built.reason || 'no-selector');
                     return;
                 }
+
                 if (LOG_WARN_NON_UNIQUE && built.unique === false) {
                     try {
                         const c = document.querySelectorAll(built.selector).length;
                         if (c !== 1) console.warn('⚠ seletor não único:', built.selector, '(count=', c, ')');
                     } catch (e) { console.warn('⚠ seletor inválido:', built.selector, e); }
                 }
+
+                // Coleta de atributos padrão
+                const attrs = {
+                    name: el.getAttribute && el.getAttribute('name'),
+                    type: el.getAttribute && el.getAttribute('type'),
+                    placeholder: el.getAttribute && el.getAttribute('placeholder'),
+                    id: el.getAttribute && el.getAttribute('id'),
+                    role: el.getAttribute && el.getAttribute('role'),
+                    // (mantém text para elementos que não são <select>)
+                    text: (el.textContent || '').trim().slice(0, 120)
+                };
+
+                // ✅ NOVO: se for <select>, capture TODAS as opções (texto completo, sem truncar)
+                if (tag === 'select') {
+                    try {
+                        const arr = Array.from(el.querySelectorAll('option'))
+                            .map(o => (o.textContent || '').trim())
+                            .filter(Boolean);
+                        attrs.options = arr;
+                    } catch { }
+                }
+
                 window.reportInteraction({
                     selector: built.selector,
                     action,
                     tagName: tag,
                     visible: built.visible === true,
                     unique: built.unique === true,
-                    attrs: {
-                        name: el.getAttribute && el.getAttribute('name'),
-                        type: el.getAttribute && el.getAttribute('type'),
-                        placeholder: el.getAttribute && el.getAttribute('placeholder'),
-                        id: el.getAttribute && el.getAttribute('id'),
-                        role: el.getAttribute && el.getAttribute('role'),
-                        text: (el.textContent || '').trim().slice(0, 120)
-                    },
+                    attrs,
                     timestamp: Date.now(),
                     url: window.location.href
                 });
@@ -413,7 +429,6 @@ async function stop() {
         const meta = {
             ...(it.meta || {}),
             role: attrs.role || null,
-            text: attrs.text || null,
             networkTriggered: it.network === true,
             ...(act === 'press' ? { key: 'Enter' } : {})
         };
@@ -432,16 +447,30 @@ async function stop() {
         if (act === 'click' && downloadSelectors.has(it.selector)) {
             continue;
         }
+        // ✅ NOVO: para <select>, gerar meta.options a partir do que foi capturado
+        if (act === 'select') {
+            if (Array.isArray(it.attrs?.options) && it.attrs.options.length) {
+                meta.options = it.attrs.options;
+            } else if (attrs.text) {
+                // fallback (se por algum motivo não vier o attrs.options)
+                meta.options = String(attrs.text)
+                    .split(/\n|\t/)
+                    .map(s => s.trim())
+                    .filter(Boolean);
+            }
+        } else {
+            // Para steps que NÃO são select, manter meta.text como antes
+            meta.text = attrs.text || null;
+        }
 
         // expectedUrl (sem query) se houver
         if (it.meta?.reqUrl) meta.expectedUrl = it.meta.reqUrl.split('?')[0];
 
         steps.push({
             action: act,
-            // Mantemos selector normal exceto quando veio do viewer, que já setamos como 'html' na captura
             selector: it.selector,
-            ...(act === 'fill' || act === 'upload' ? { key: keyAttr } : {}),
-            ...(act === 'download' && it.url ? { url: it.url } : {}),  // <- inclui a URL no step de download
+            ...(act === 'fill' || act === 'upload' || act === 'select' ? { key: keyAttr } : {}),
+            ...(act === 'download' && it.url ? { url: it.url } : {}),
             meta
         });
     }

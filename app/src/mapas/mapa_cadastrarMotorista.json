@@ -12,8 +12,8 @@
       "selector": "#formMenu\\:j_idt126_label",
       "meta": {
         "role": null,
-        "text": "Cadastros",
-        "networkTriggered": true
+        "networkTriggered": true,
+        "text": "Cadastros"
       }
     },
     {
@@ -21,8 +21,8 @@
       "selector": "#formMenu\\:j_idt137",
       "meta": {
         "role": null,
-        "text": "Motoristas",
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": "Motoristas"
       }
     },
     {
@@ -30,8 +30,8 @@
       "selector": "#formMenu\\:j_idt138",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": "Motoristas"
       }
     },
     {
@@ -39,8 +39,139 @@
       "selector": "[name=\"formmotoristaFil:novomotoristaFil\"]",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": true
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formmotorista\\:intab0_1\\:header > span.rf-tab-lbl:nth-child(1)",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "B. Complemento"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_dataNascimentoInputDate\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_dataNascimentoInputDate\"]",
+      "key": "data_nasc",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cidadeNaturalInput\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cidadeNaturalInput\"]",
+      "key": "cidade_nasc",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "press",
+      "selector": "[name=\"formmotorista:Motorista_cidadeNaturalInput\"]",
+      "meta": {
+        "key": "Enter",
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "div.rf-au-itm.rf-au-opt.rf-au-fnt.rf-au-inp.rf-au-itm-sel.rf-au-opt-sel:nth-child(1)",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": "VARZEA GRANDE,MT,BRASIL-5293"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_sexo\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "Masculino\n\tFeminino"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_nomePai\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_nomePai\"]",
+      "key": "nome_pai",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_nomeMae\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_nomeMae\"]",
+      "key": "nome_mae",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_estadoCivil\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "Solteiro(a)\n\tCasado(a)\n\tDivorciado(a)\n\tSeparado(a)\n\tAmasiado(a)\n\tViúvo(a)"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formmotorista\\:intab0_0\\:header > span.rf-tab-lbl:nth-child(1)",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "A. Dados Gerais"
       }
     },
     {
@@ -48,8 +179,8 @@
       "selector": "[name=\"formmotorista:Motorista_cpf\"]",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": true
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
@@ -58,8 +189,65 @@
       "key": "cpf",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formmotorista\\:intab0_0\\:content > table:nth-child(1) > tbody:nth-child(1)",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "Código:\n\nVenc. Cadastro:\nDomSegTerQuaQuiSexSáb\nRichFaces.ui.Calendar.addLocale(\"pt_BR\",\n                    {\"firstWeekD"
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_nome\"]",
+      "key": "nome",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cep\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cep\"]",
+      "key": "cep",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_endereco\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_endereco\"]",
+      "key": "end_logradouro",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
@@ -67,18 +255,18 @@
       "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": true
+        "networkTriggered": true,
+        "text": null
       }
     },
     {
       "action": "fill",
       "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
-      "key": "cidade",
+      "key": "end_cidade",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
@@ -87,17 +275,46 @@
       "meta": {
         "key": "Enter",
         "role": null,
-        "text": null,
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
       "action": "click",
-      "selector": "div.rf-au-itm.rf-au-opt.rf-au-fnt.rf-au-inp.rf-au-itm-sel.rf-au-opt-sel:nth-child(1)",
+      "selector": "[name=\"formmotorista:Motorista_numero\"]",
       "meta": {
         "role": null,
-        "text": "CUIABA,MT,BRASIL-5290",
-        "networkTriggered": false
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_numero\"]",
+      "key": "end_numero",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_bairro\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_bairro\"]",
+      "key": "end_bairro",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
@@ -105,27 +322,357 @@
       "selector": "[name=\"formmotorista:Motorista_complemento\"]",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": true
+        "networkTriggered": true,
+        "text": null
       }
     },
     {
       "action": "fill",
       "selector": "[name=\"formmotorista:Motorista_complemento\"]",
-      "key": "complemento",
+      "key": "end_complemento",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": false
+        "networkTriggered": false,
+        "text": null
       }
     },
     {
       "action": "click",
-      "selector": "[name=\"formmotorista:cancelarmotorista\"]",
+      "selector": "[name=\"formmotorista:Motorista_celular\"]",
       "meta": {
         "role": null,
-        "text": null,
-        "networkTriggered": true
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_celular\"]",
+      "key": "telefone",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_rg\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_rg\"]",
+      "key": "rg",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_dataEmissaoRgInputDate\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_dataEmissaoRgInputDate\"]",
+      "key": "data_emissao_rg",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_orgaoRg\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_orgaoRg\"]",
+      "key": "org_emissor_rg",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_prontuario\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_prontuario\"]",
+      "key": "n_registro_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_validadeCarteiraInputDate\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_validadeCarteiraInputDate\"]",
+      "key": "data_validade_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_catHabilitacao\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_catHabilitacao\"]",
+      "key": "categoria_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cnh\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cnh\"]",
+      "key": "n_form_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_dataPrimeiraCnhInputDate\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_dataPrimeiraCnhInputDate\"]",
+      "key": "data_primeira_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_numSegCnh\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_numSegCnh\"]",
+      "key": "n_seg_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cidadeCnhInput\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cidadeCnhInput\"]",
+      "key": "cidade_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "press",
+      "selector": "[name=\"formmotorista:Motorista_cidadeCnhInput\"]",
+      "meta": {
+        "key": "Enter",
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_numRenachCnh\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_numRenachCnh\"]",
+      "key": "renach",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_dataEmissaoCnhInputDate\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_dataEmissaoCnhInputDate\"]",
+      "key": "data_emissao_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_filial\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": "-\n\t1 - ON TRANSPORTES RODOVIÁRIO LTDA (SORRISO/MT)"
+      }
+    },
+    {
+      "action": "select",
+      "selector": "[name=\"formmotorista:Motorista_filial\"]",
+      "key": "filial",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "options": [
+          "-",
+          "1 - ON TRANSPORTES RODOVIÁRIO LTDA (SORRISO/MT)"
+        ]
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_configFoto\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "upload",
+      "selector": "#formmotorista\\:tableFotos\\:0\\:selecionarFoto > div.rf-fu-hdr:nth-child(1) > span.rf-fu-btns-lft:nth-child(1) > span.rf-fu-btn-add:nth-child(1) > span.rf-fu-btn-cnt-add:nth-child(1) > span.rf-fu-inp-cntr:nth-child(1) > input.rf-fu-inp:nth-child(1)",
+      "key": "foto_cnh",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "uploadDir": null,
+        "text": null
+      }
+    },
+    {
+      "action": "upload",
+      "selector": "#formmotorista\\:tableFotos\\:1\\:selecionarFoto > div.rf-fu-hdr:nth-child(1) > span.rf-fu-btns-lft:nth-child(1) > span.rf-fu-btn-add:nth-child(1) > span.rf-fu-btn-cnt-add:nth-child(1) > span.rf-fu-inp-cntr:nth-child(1) > input.rf-fu-inp:nth-child(1)",
+      "key": "foto_qrcode",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "uploadDir": null,
+        "text": null
+      }
+    },
+    {
+      "action": "upload",
+      "selector": "#formmotorista\\:tableFotos\\:2\\:selecionarFoto > div.rf-fu-hdr:nth-child(1) > span.rf-fu-btns-lft:nth-child(1) > span.rf-fu-btn-add:nth-child(1) > span.rf-fu-btn-cnt-add:nth-child(1) > span.rf-fu-inp-cntr:nth-child(1) > input.rf-fu-inp:nth-child(1)",
+      "key": "foto_motorista",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "uploadDir": null,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:j_idt1213\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:gravarmotorista\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
       }
     }
   ],

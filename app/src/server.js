@@ -2,7 +2,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const mapper = require('./funcoes/mapear');   // mantém seu caminho atual
+const mapper = require('./mapear');   // mantém seu caminho atual
 
 const app = express();
 app.use(express.json());
