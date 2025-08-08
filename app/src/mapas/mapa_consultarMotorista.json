@@ -1,5 +1,6 @@
 {
-  "modo": "consultar",
+  "operacao": "consultar",
+  "categoria": "motorista",
   "login": {
     "username": "[name=\"formCad:nome\"]",
     "password": "[name=\"formCad:senha\"]",
@@ -45,7 +46,7 @@
     {
       "action": "fill",
       "selector": "[name=\"formmotoristaFil:MotoristaFil_cpf\"]",
-      "key": "cpf",
+      "key": "formmotoristafil:motoristafil_cpf",
       "meta": {
         "role": null,
         "text": null,

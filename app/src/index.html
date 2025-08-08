@@ -36,17 +36,18 @@
                             placeholder="http://.../login.jsf">
                     </div>
                     <div class="col-md-3">
-                        <label for="nomeArquivo" class="form-label">Nome do Arquivo (sem prefixo)</label>
-                        <input type="text" class="form-control" name="nomeArquivo" id="nomeArquivo" required
-                            placeholder="ex: consultarMotorista">
+                        <label for="operacao" class="form-label">Operação</label>
+                        <select id="operacao" class="form-select">
+                            <option value="consultar">Consultar</option>
+                            <option value="cadastrar">Cadastrar</option>
+                            <option value="baixar">Baixar</option>
+                            <option value="editar">Editar</option>
+                        </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="modo" class="form-label">Modo</label>
-                        <select id="modo" class="form-select">
-                            <option value="consultar">Consultar</option>
-                            <option value="inserir">Inserir</option>
-                            <option value="download">Download</option>
-                        </select>
+                        <label for="nomeArquivo" class="form-label">Nome do Arquivo (sem prefixo)</label>
+                        <input type="text" class="form-control" name="nomeArquivo" id="nomeArquivo" required
+                            placeholder="ex: motorista">
                     </div>
 
                     <div class="col-12 d-flex gap-2 mt-2">
@@ -82,7 +83,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 id="mapaTitulo" class="card-title mono mb-0"></h5>
-                                <small class="text-muted">Modo: <span id="mapaModo"
+                                <small class="text-muted">Operação: <span id="mapaOperacao"
                                         class="badge bg-info-subtle text-info-emphasis">—</span></small>
                             </div>
                             <div>
@@ -147,7 +148,7 @@
         const listaMapas = document.getElementById('listaMapas');
         const painelMapa = document.getElementById('painelMapa');
         const mapaTitulo = document.getElementById('mapaTitulo');
-        const mapaModoEl = document.getElementById('mapaModo');
+        const mapaOperacaoEl = document.getElementById('mapaOperacao');
         const arquivoDados = document.getElementById('arquivoDados');
         const dadosResumo = document.getElementById('dadosResumo');
         const jsonKeysBox = document.getElementById('jsonKeys');
@@ -222,7 +223,7 @@
                 mapaAtual = mapa;
 
                 mapaTitulo.textContent = nomeArquivo;
-                mapaModoEl.textContent = mapa.modo || '(não definido)';
+                mapaOperacaoEl.textContent = mapa.operacao || '(não definido)';
                 painelMapa.style.display = '';
 
                 updateOpenButtons();
@@ -391,7 +392,7 @@
 
             const url = document.getElementById('url').value;
             const nomeArquivo = document.getElementById('nomeArquivo').value;
-            const modo = document.getElementById('modo').value;
+            const operacao = document.getElementById('operacao').value;
 
             // Validação básica da URL
             if (!isValidHttpUrl(url.trim())) {
@@ -408,7 +409,7 @@
                 const response = await fetch('/mapear', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, nomeArquivo, modo })
+                    body: JSON.stringify({ url, nomeArquivo, operacao, categoria: nomeArquivo })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.erro || 'Falha ao iniciar');

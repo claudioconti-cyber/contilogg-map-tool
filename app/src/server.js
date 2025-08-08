@@ -1,3 +1,4 @@
+// src/server.js (mapeador)
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -16,19 +17,35 @@ let running = false;
 
 /* ===================== ROTAS DO MAPEAMENTO ===================== */
 
+/**
+ * Inicia o mapeamento.
+ * Espera body:
+ * {
+ *   url: string,
+ *   nomeArquivo: string,       // sem extensão; será salvo como mapa_<nome>.json
+ *   operacao: "consultar" | "cadastrar" | "baixar" | "editar",
+ *   categoria?: string         // opcional; se não vier, usa nomeArquivo
+ * }
+ */
 app.post('/mapear', async (req, res) => {
     if (running) return res.status(409).json({ erro: 'Já rodando' });
 
-    const { url, nomeArquivo, modo } = req.body;
-    if (!url || !nomeArquivo || !modo) {
-        return res.status(400).json({ erro: 'Parâmetros insuficientes' });
+    const { url, nomeArquivo, operacao, categoria } = req.body || {};
+    if (!url || !nomeArquivo || !operacao) {
+        return res.status(400).json({ erro: 'Parâmetros insuficientes: envie url, nomeArquivo e operacao.' });
+    }
+
+    const op = String(operacao).toLowerCase();
+    if (!['consultar', 'cadastrar', 'baixar', 'editar'].includes(op)) {
+        return res.status(400).json({ erro: 'Valor de "operacao" inválido. Use consultar | cadastrar | baixar | editar.' });
     }
 
     try {
-        const outPath = path.join(MAP_DIR, `mapa_${nomeArquivo}.json`);
-        await mapper.start(url, outPath, modo);
+        const outPath = path.join(MAP_DIR, `mapa_${operacao}${categoria.charAt(0).toUpperCase() + categoria.slice(1)}.json`);
+        const cat = (categoria && String(categoria).trim()) ? String(categoria).trim() : String(nomeArquivo).trim();
+        await mapper.start(url, outPath, op, cat); // <- nova assinatura (operacao, categoria)
         running = true;
-        res.json({ mensagem: 'Mapeamento iniciado. Use /stop para finalizar.' });
+        res.json({ mensagem: 'Mapeamento iniciado. Use /stop para finalizar.', arquivo: `mapa_${nomeArquivo}.json`, operacao: op, categoria: cat });
     } catch (e) {
         res.status(500).json({ erro: e.message });
     }
@@ -52,7 +69,9 @@ app.post('/stop', async (_req, res) => {
 app.get('/mapas', async (_req, res) => {
     try {
         const files = await fs.promises.readdir(MAP_DIR);
-        const jsons = files.filter(f => f.toLowerCase().endsWith('.json')).sort();
+        const jsons = files
+            .filter(f => f.toLowerCase().endsWith('.json'))
+            .sort();
         res.json({ mapas: jsons });
     } catch (e) {
         res.status(500).json({ erro: e.message });
@@ -117,4 +136,6 @@ app.post('/mapas/:nome/keys', async (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('Servidor em http://localhost:3000'));
+app.listen(3000, () => console.log('Servidor do mapeador em http://localhost:3000'));
+
+module.exports = { app };

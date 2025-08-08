@@ -1,5 +1,6 @@
 {
-  "modo": "inserir",
+  "operacao": "cadastrar",
+  "categoria": "motorista",
   "login": {
     "username": "[name=\"formCad:nome\"]",
     "password": "[name=\"formCad:senha\"]",
@@ -29,7 +30,7 @@
       "selector": "#formMenu\\:j_idt138",
       "meta": {
         "role": null,
-        "text": "Motoristas",
+        "text": null,
         "networkTriggered": false
       }
     },
@@ -40,6 +41,25 @@
         "role": null,
         "text": null,
         "networkTriggered": true
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formmotorista:Motorista_cpf\"]",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": true
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formmotorista:Motorista_cpf\"]",
+      "key": "cpf",
+      "meta": {
+        "role": null,
+        "text": null,
+        "networkTriggered": false
       }
     },
     {
@@ -65,10 +85,10 @@
       "action": "press",
       "selector": "[name=\"formmotorista:Motorista_cidadeInput\"]",
       "meta": {
+        "key": "Enter",
         "role": null,
         "text": null,
-        "networkTriggered": false,
-        "key": "Enter"
+        "networkTriggered": false
       }
     },
     {

@@ -10,7 +10,9 @@ let output = '';
 let interactions = [];
 let ajaxCount = 0;
 let lastAjaxUrl = null;          // armazena URL do último XHR/FETCH
-let mapMode = null; // "consultar" | "inserir" | null
+let mapOperacao = null;       // "consultar" | "cadastrar" | "baixar" | "editar"
+let mapCategoria = null;      // nome do mapa (categoria)
+let recentDownloads = new Map();  // selector -> timestamp do último "download" registrado
 
 /* =================================================================== */
 
@@ -21,13 +23,15 @@ let mapMode = null; // "consultar" | "inserir" | null
  * @param {string} url          URL a ser mapeada
  * @param {string} outputFile   Caminho do arquivo .json de saída
  */
-async function start(url, outputFile = 'mapa.json', modo = null) {
+async function start(url, outputFile = 'mapa.json', operacao = null, categoria = null) {
     if (browser) throw new Error('Mapeamento já em execução');
 
     output = outputFile;
     interactions = [];
+    recentDownloads = new Map();
     ajaxCount = 0;
-    mapMode = modo || null;
+    mapOperacao = operacao || null;
+    mapCategoria = categoria || null;
 
     /* === FLAGS herdadas do mapear_old.js === */
     const SAVE_ONLY_UNIQUE_VISIBLE = true;
@@ -38,6 +42,16 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
     browser = await chromium.launch({ headless: false, slowMo: 300 });
     context = await browser.newContext();
     page = await context.newPage();
+
+    function pushDownloadOnce(selector) {
+        const key = selector || '__null__';
+        const now = Date.now();
+        const last = recentDownloads.get(key) || 0;
+        // Janela curta anti-duplicação (2s) — evita registrar duas vezes o mesmo download
+        if (now - last < 2000) return;
+        interactions.push({ selector, action: 'download', timestamp: now });
+        recentDownloads.set(key, now);
+    }
 
     /* === Contador de XHR/fetch === */
     context.on('request', req => {
@@ -275,22 +289,8 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
 
     /* === Captura de DOWNLOAD === */
     page.on('download', download => {
-        // Busca o último clique para “ancorar” o selector do botão
         const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
-        interactions.push({
-            selector: lastClick ? lastClick.selector : null,
-            action: 'download',
-            tagName: lastClick ? lastClick.tagName : '',
-            visible: true,
-            unique: true,
-            attrs: lastClick ? lastClick.attrs : {},
-            meta: {
-                suggestedFilename: download.suggestedFilename(),
-                downloadDir: null      // será preenchido pelo executor
-            },
-            timestamp: Date.now(),
-            url: download.url()
-        });
+        pushDownloadOnce(lastClick ? lastClick.selector : null);
         console.log('✔ download', download.suggestedFilename());
     });
 
@@ -305,35 +305,18 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
             const req = res.request();
             if (!req.isNavigationRequest()) return;
 
-            // Ancora no último clique feito (botão/ação que levou ao viewer)
             const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
-
-            interactions.push({
-                // NÃO repetimos o seletor do clique anterior quando vier do viewer
-                selector: 'html',                               // <- seletor neutro
-                action: 'download',
-                tagName: lastClick ? lastClick.tagName : '',
-                visible: true,
-                unique: true,
-                attrs: lastClick ? lastClick.attrs : {},
-                meta: {
-                    fromPdfViewer: true,                          // indica que veio do viewer
-                    suggestedFilename: (res.url().split('/').pop() || 'document.pdf'),
-                    downloadDir: null,                            // preenchido no executor
-                    anchorSelector: lastClick ? lastClick.selector : null // guardamos o "clique âncora" só como metadado
-                },
-                timestamp: Date.now(),
-                url: res.url()                                  // URL do PDF que será baixado pelo executor
-            });
-
+            pushDownloadOnce(lastClick ? lastClick.selector : null);
             console.log('✔ download (PDF viewer)', res.url());
         } catch {
             // ignorar erros de parsing de header/response
         }
     });
 
-    /* Também cobre o caso de popup que abre um PDF */
     context.on('page', (newPage) => {
+        console.log('🆕 Nova aba/popup aberta:', newPage.url());
+
+        // (já existente) Captura PDF viewer via 'response'...
         newPage.on('response', async (res) => {
             try {
                 const headers = res.headers();
@@ -343,31 +326,21 @@ async function start(url, outputFile = 'mapa.json', modo = null) {
                 if (!req.isNavigationRequest()) return;
 
                 const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
-
-                interactions.push({
-                    selector: 'html',                                // seletor neutro (não repetimos o clique)
-                    action: 'download',
-                    tagName: lastClick ? lastClick.tagName : '',
-                    visible: true,
-                    unique: true,
-                    attrs: lastClick ? lastClick.attrs : {},
-                    meta: {
-                        fromPdfViewer: true,
-                        suggestedFilename: (res.url().split('/').pop() || 'document.pdf'),
-                        downloadDir: null,
-                        anchorSelector: lastClick ? lastClick.selector : null
-                    },
-                    timestamp: Date.now(),
-                    url: res.url()
-                });
-
+                pushDownloadOnce(lastClick ? lastClick.selector : null);
                 console.log('✔ download (PDF viewer / popup)', res.url());
             } catch { /* ignore */ }
         });
+
+        // ✅ NOVO: captura download nativo também nas popups
+        newPage.on('download', download => {
+            const lastClick = interactions.slice().reverse().find(i => i.action === 'click');
+            pushDownloadOnce(lastClick ? lastClick.selector : null);
+            console.log('✔ download (popup)', download.suggestedFilename());
+        });
     });
 
-    /* Expondo função que o script injetado usa */
-    await page.exposeFunction('reportInteraction', meta => {
+    // Torna 'reportInteraction' disponível em TODAS as páginas/abas do contexto
+    await context.exposeBinding('reportInteraction', async (_source, meta) => {
         meta.network = ajaxCount > 0;
         ajaxCount = 0;
         if (meta.network === true) meta.reqUrl = lastAjaxUrl || null;
@@ -403,6 +376,14 @@ async function stop() {
 
     const loginSel = new Set([login.username, login.password, login.submit].filter(Boolean));
     const seen = new Set(); const steps = [];
+
+    // Conjunto de seletores que geraram step de download
+    const downloadSelectors = new Set(
+        interactions
+            .filter(i => i.action === 'download' && i.selector)
+            .map(i => i.selector)
+    );
+
     for (const it of interactions) {
         if (!it.selector || loginSel.has(it.selector)) continue;
         const tag = it.tagName || ''; const attrs = it.attrs || {};
@@ -438,7 +419,19 @@ async function stop() {
         };
 
         if (act === 'upload' && meta.uploadDir == null) meta.uploadDir = null;
-        if (act === 'download' && meta.downloadDir == null) meta.downloadDir = null;
+        if (act === 'download') {
+            steps.push({
+                action: 'download',
+                selector: it.selector
+                // nada além disso: sem key, sem url, sem meta
+            });
+            continue; // segue para o próximo item
+        }
+        // Se este clique apenas inicia um download (mesmo selector),
+        // não salve o step de "click" — o mapa deve ter só o "download".
+        if (act === 'click' && downloadSelectors.has(it.selector)) {
+            continue;
+        }
 
         // expectedUrl (sem query) se houver
         if (it.meta?.reqUrl) meta.expectedUrl = it.meta.reqUrl.split('?')[0];
@@ -457,13 +450,14 @@ async function stop() {
     let logoutSelector = steps.pop().selector;
 
     // Se for mapa de consulta, marque o último step como âncora de verificação de resultado
-    if (mapMode === 'consultar' && steps.length > 0) {
+    if (mapOperacao === 'consultar' && steps.length > 0) {
         const last = steps[steps.length - 1];
         last.meta = { ...(last.meta || {}), resultSelector: true };
     }
 
     const finalMap = {
-        modo: mapMode || null,
+        operacao: mapOperacao || null,
+        categoria: mapCategoria || null,
         login: (login.username && login.password && login.submit) ? login : {},
         steps,
         logout: logoutSelector || null
@@ -476,7 +470,8 @@ async function stop() {
     browser = context = page = null;
     interactions = [];
     output = '';
-    mapMode = null;
+    mapOperacao = null;
+    mapCategoria = null;
 }
 
 /* =========================  EXPORTA DUAS FUNÇÕES  ========================= */
