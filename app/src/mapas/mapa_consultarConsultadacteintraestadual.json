@@ -1,0 +1,68 @@
+{
+  "operacao": "consultar",
+  "categoria": "consultadacteintraestadual",
+  "login": {
+    "username": "[name=\"formCad:nome\"]",
+    "password": "[name=\"formCad:senha\"]",
+    "submit": "[name=\"formCad:entrar\"]"
+  },
+  "steps": [
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt184",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "ViagensPedidosnew RichFaces.ui.MenuItem(\"formMenu:j_idt187\",{\"onClickHandler\":function(event){RichFaces.submitForm(event"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formMenu\\:j_idt191",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": "Emissão de Viagem/CTe"
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formconhecimentoFil:ConhecimentoFil_numNF\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": null
+      }
+    },
+    {
+      "action": "fill",
+      "selector": "[name=\"formconhecimentoFil:ConhecimentoFil_numNF\"]",
+      "key": "formconhecimentofil:conhecimentofil_numnf",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "[name=\"formconhecimentoFil:filtrarconhecimentoFil\"]",
+      "meta": {
+        "role": null,
+        "networkTriggered": false,
+        "text": null
+      }
+    },
+    {
+      "action": "click",
+      "selector": "#formconhecimentoFil\\:table\\:0\\:numero > a:nth-child(1)",
+      "meta": {
+        "role": null,
+        "networkTriggered": true,
+        "text": "755",
+        "resultSelector": true
+      }
+    }
+  ],
+  "logout": "#formMenu\\:j_idt10"
+}
